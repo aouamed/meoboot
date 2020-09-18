@@ -1,0 +1,39 @@
+#!/bin/sh
+if [ ! -d "/media/usb" ]; then
+	mkdir /media/usb
+fi
+if [ ! -d "/media/hdd" ]; then
+	mkdir /media/hdd
+fi
+if [ ! -d "/media/card" ]; then
+	mkdir /media/card
+fi
+if [ ! -d "/media/cf" ]; then
+	mkdir /media/cf
+fi
+if [ ! -d "/media/mmc1" ]; then
+	mkdir /media/mmc1
+fi
+if [ ! -d "/media/net" ]; then
+	mkdir /media/net
+fi
+if [ ! -d "/media/ram" ]; then
+	mkdir /media/ram
+fi
+if [ ! -d "/media/usb2" ]; then
+	mkdir /media/usb2
+fi
+if [ ! -f /etc/settings.mounts ]; then
+  if [ "$(cat /proc/partitions | grep sda1)" != "" ]; then
+    VENDOR=$(cat /sys/block/sda/device/vendor | sed "s/ *$//")
+    MODEL=$(cat /sys/block/sda/device/model | sed "s/ *$//")
+	echo "/hdd:$MODEL:$VENDOR:1" > /etc/settings.mounts
+  else
+    touch /etc/settings.mounts
+  fi
+fi
+
+IFS=$'\n'
+for i in $(cat /etc/settings.mounts); do
+  mountindb "$i"
+done
